@@ -16,33 +16,35 @@ Directory contents when software is included.
 ```
 $ tree
 .
-+--- README.md
-+--- Vagrantfile
-+--- software
-|   +--- oracle-database-xe-18c-1.0-1.x86_64.rpm
-|   +--- ords-19.1.0.092.1545.zip
-|   +--- ords-19.2.0.199.1647.zip
-|   +--- put_software_here.txt
-+--- scripts
-|   +--- database.sh
-|   +--- general.sh
-|   +--- httpd.sh
-|   +--- hitch.sh
-|   +--- nginx.sh
-|   +--- ords.sh
-|   +--- siege.sh
-|   +--- tomcat.sh
-|   +--- tls.sh
-|   +--- varnish.sh
-+--- testsuite
-|   +--- orp-auto-manual
-|   +--- orp-connections
-|   +--- orp-combos
-|   +--- orp-demo
-|   +--- orp-lib
-|   +--- orp-protocols
-|   +--- orp-reset
-|   +--- orp-threads
-|   +--- orp-urls.py
-|   +--- orp-warmup
+├── README.md
+├── Vagrantfile
+├── scripts
+│   ├── database.sh
+│   ├── general.sh
+│   ├── hitch.sh
+│   ├── httpd.sh
+│   ├── nginx.sh
+│   ├── ords.sh
+│   ├── siege.sh
+│   ├── tls.sh
+│   ├── tomcat.sh
+│   └── varnish.sh
+├── software
+│   ├── oracle-database-xe-18c-1.0-1.x86_64.rpm
+│   ├── ords-19.1.0.092.1545.zip
+│   ├── ords-19.2.0.199.1647.zip
+│   └── put_software_here.txt
+└── testsuite
+    ├── ords-auto-manual
+    ├── ords-connections
+    ├── ords-demo
+    ├── ords-lib
+    ├── ords-max-threads
+    ├── ords-protocols
+    ├── ords-reset
+    ├── ords-reverse-proxies
+    ├── ords-upgrade
+    ├── ords-urls.py
+    ├── ords-versions
+    └── ords-warmup
 ```
