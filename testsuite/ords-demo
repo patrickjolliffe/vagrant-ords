@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+#No problem if it's blank
+#Each test should provide it's own defaults
+. ords-lib
+
+DURATION=$1
+ITERATIONS=$2
+RESTART_WAIT_SECONDS=$3
+
+#Just in case orp-threads killed before completion
+set_threads 4 $RESTART_WAIT_SECONDS
+
+ords-connections $DURATION
+ords-warmup $ITERATIONS $DURATION $RESTART_WAIT_SECONDS
+ords-protocols $DURATION
+ords-threads $ITERATIONS $DURATION $RESTART_WAIT_SECONDS 
+ords-auto-manual $DURATION
+ords-reverse-proxies $DURATION

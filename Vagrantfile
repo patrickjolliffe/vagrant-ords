@@ -1,0 +1,83 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Variables
+var_box            = 'bento/oracle-7.6'
+var_vm_name        = 'ora18c-ords191-reverseproxy'
+#Reducing this to 4096 results in swapping 
+#In addition results in less efficient filesystem caching 
+#Resulting in worse nginx and apache caching
+var_mem_size       = 6144
+var_cpus           = 4
+var_non_rotational = 'on' # SSD
+
+
+Vagrant.configure("2") do |config|
+  config.vm.box = var_box
+
+  #Oracle Database Listener
+  config.vm.network "forwarded_port", guest: 1521, host: 1521
+
+
+  #Map HTTP & HTTPS Ports maybe useful for troubleshooting
+  #Note for successful HTTPS connection you will need to install cert on host machine
+  #Apache Tomcat
+  config.vm.network "forwarded_port", guest: 1110, host: 1110 # HTTP
+  config.vm.network "forwarded_port", guest: 1210, host: 1210 # HTTPS
+
+  #Apache HTTP Server
+  config.vm.network "forwarded_port", guest: 2110, host: 2110 # HTTP
+  config.vm.network "forwarded_port", guest: 2120, host: 2120 # HTTP, Cache GETs  
+  config.vm.network "forwarded_port", guest: 2210, host: 2210 # HTTPS
+  config.vm.network "forwarded_port", guest: 2220, host: 2220 # HTTPS, Cache GETs
+
+  #Nginx
+  config.vm.network "forwarded_port", guest: 3110, host: 3110 # HTTP
+  config.vm.network "forwarded_port", guest: 3120, host: 3120 # HTTP, Cache GETs
+  config.vm.network "forwarded_port", guest: 3130, host: 3130 # HTTP, Cache POSTs
+  config.vm.network "forwarded_port", guest: 3210, host: 3210 # HTTPS 
+  config.vm.network "forwarded_port", guest: 3220, host: 3220 # HTTPS, Cache GETs
+  config.vm.network "forwarded_port", guest: 3230, host: 3230 # HTTPS, Cache POSTs
+
+  #Varnish + Hitch
+  config.vm.network "forwarded_port", guest: 4110, host: 4110 # HTTP
+  config.vm.network "forwarded_port", guest: 4120, host: 4120 # HTTP, Cache GETs
+  config.vm.network "forwarded_port", guest: 4130, host: 4130 # HTTP, Cache POSTs
+  config.vm.network "forwarded_port", guest: 4210, host: 4210 # HTTPS
+  config.vm.network "forwarded_port", guest: 4220, host: 4220 # HTTPS Cache GETs
+  config.vm.network "forwarded_port", guest: 4230, host: 4230 # HTTPS Cache POSTs
+
+  #Don't set hostname here otherwise db installation will fail :(
+  #config.vm.hostname = "ords-reverseproxy.localdomain"
+
+  config.vm.synced_folder "testsuite", "/home/vagrant/testsuite", mount_options: ["dmode=775,fmode=777"]
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = var_mem_size
+    vb.cpus   = var_cpus
+    vb.name   = var_vm_name    
+    vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', '0', '--nonrotational', var_non_rotational]
+    vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]    
+  end
+  #Oracle Database
+  config.vm.provision "shell", path: "scripts/database.sh"
+  #General setup must be run after db creation as this
+  #sets hostname which database creation to fail
+  config.vm.provision "shell", path: "scripts/general.sh"
+  #Generate certificates etc for use by Tomcat & Reverse Proxies
+  config.vm.provision "shell", path: "scripts/tls.sh"
+  #Apache Tomcat
+  config.vm.provision "shell", path: "scripts/tomcat.sh"
+  #Install ORDS 19.2 (can be downgraded to 19.1)
+  config.vm.provision "shell", path: "scripts/ords.sh", args: "19.2"
+  #Apache HTTP Server
+  config.vm.provision "shell", path: "scripts/httpd.sh"
+  #Nginx
+  config.vm.provision "shell", path: "scripts/nginx.sh"
+  #Varnish
+  config.vm.provision "shell", path: "scripts/varnish.sh"
+  #Hitch
+  config.vm.provision "shell", path: "scripts/hitch.sh"
+  #Siege
+  config.vm.provision "shell", path: "scripts/siege.sh"
+end
