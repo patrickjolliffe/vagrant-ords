@@ -29,14 +29,14 @@ cat > /tmp/sed_herefile << EOF
    <!-- HTTPS -->
    <!-- APR/Native Connector uses OpenSSL -->
    <Connector  port="1210" protocol="org.apache.coyote.http11.Http11AprProtocol"
-               SSLCertificateFile="/usr/local/ssl/orp.crt"
-               SSLCertificateKeyFile="/usr/local/ssl/orp.key"
+               SSLCertificateFile="/usr/local/ssl/ords.crt"
+               SSLCertificateKeyFile="/usr/local/ssl/ords.key"
                maxThreads="4" SSLEnabled="true" scheme="https" secure="true"
                clientAuth="false" sslProtocol="TLS" />
 
    <!-- Non-blocking Java connector uses JSSE SSL  -->
    <Connector port="1211" protocol="org.apache.coyote.http11.Http11NioProtocol"              
-              keystoreFile="/usr/local/ssl/orp.jks"
+              keystoreFile="/usr/local/ssl/ords.jks"
               keystorePass="Password123"
               maxThreads="4" SSLEnabled="true" scheme="https" secure="true"
               clientAuth="false" sslProtocol="TLS" />
@@ -44,7 +44,7 @@ cat > /tmp/sed_herefile << EOF
 
    <!-- Non-blocking Java connector uses JSSE SSL  -->
    <Connector port="1212" protocol="org.apache.coyote.http11.Http11Protocol"              
-              keystoreFile="/usr/local/ssl/orp.jks"
+              keystoreFile="/usr/local/ssl/ords.jks"
               keystorePass="Password123"
               maxThreads="4" SSLEnabled="true" scheme="https" secure="true"
               clientAuth="false" sslProtocol="TLS" />
