@@ -10,6 +10,7 @@ Group apache
     TypesConfig /etc/mime.types
 </IfModule>
 
+ServerName ords
 #Add Cache status to HTTP Header
 #Useful for debugging
 CacheDetailHeader on
@@ -30,7 +31,8 @@ Listen 2120
     CacheRoot        /var/cache/httpd/
 </VirtualHost>
 
-LoadModule ssl_module modules/mod_ssl.so
+#Included from conf.modules.d/*.conf
+#LoadModule ssl_module modules/mod_ssl.so
 
 # TLS Reverse Proxy
 Listen 2210 https
