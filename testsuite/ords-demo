@@ -8,7 +8,7 @@ ITERATIONS=$2
 RESTART_WAIT_SECONDS=$3
 
 #Just in case orp-threads killed before completion
-set_threads 4 $RESTART_WAIT_SECONDS
+set_threads 8 $RESTART_WAIT_SECONDS
 
 ords-connections $DURATION
 ords-warmup $ITERATIONS $DURATION $RESTART_WAIT_SECONDS
