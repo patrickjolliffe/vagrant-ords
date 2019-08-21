@@ -2,7 +2,7 @@
 . ords-lib
 DURATION=${1:-1M}
 
-echo ords-reverse-proxies DURATION=$DURATION
+echo ords-rev-proxy DURATION=$DURATION
 
 #Allow duration as command line argment, default to one minute
 killall -9 siege 2> /dev/null
@@ -21,33 +21,33 @@ echo Skipping impossible combinations
 echo Note occasionally siege may hang at end of test
 echo "If that happens just kill it and re-run the test (sorry)"
 
-for CACHE_MODE in cache_off cache_on
+for CACHE in off on
 #for CACHE_MODE in cache_on
 do 
-   for METHOD in GET POST
+   for METHOD in get post
 #   for METHOD in GET
    do 
       for PROTOCOL in http https
 #      for PROTOCOL in https
       do 
-         echo "$CACHE_MODE,$METHOD,$PROTOCOL:"
-         for PROXY in proxy_none proxy_httpd proxy_nginx proxy_varnish
+         echo "cache=$CACHE,method=$METHOD,protocol=$PROTOCOL"
+         for REVERSE_PROXY in none httpd nginx varnish
 #            for PROXY in proxy_nginx
          do
                #Skip invalid combos
-            if [ "$CACHE_MODE" = "cache_on" ]
+            if [ "$CACHE" = "on" ]
             then
-               if [ "$PROXY" = "proxy_none" ]
+               if [ "$REVERSE_PROXY" = "none" ]
                then
                   continue          
-               elif [ "$METHOD" = 'POST' ] && [ "$PROXY" = 'proxy_httpd' ]
+               elif [ "$METHOD" = 'post' ] && [ "$REVERSE_PROXY" = 'httpd' ]
                then
                   continue 
                fi
             fi
-            echo -n "$(date) $PROXY:"
-            build_urls $CACHE_MODE $METHOD $PROTOCOL $PROXY rest_manual 
-            siege_tps $DURATION
+            ords-urls.py --reverse_proxy $REVERSE_PROXY --protocol $PROTOCOL --cache $CACHE --method $METHOD -t manual
+            DESCRIPTION=$(printf "%-8s" "$REVERSE_PROXY:")
+            ords-tps $DURATION "$(printf "%-8s" "$REVERSE_PROXY:")"
          done
       done
    done

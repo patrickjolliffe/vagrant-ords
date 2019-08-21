@@ -2,11 +2,11 @@
 # vi: set ft=ruby :
 
 # Variables
+#var_box            = 'generic/oracle8'
 var_box            = 'bento/oracle-7.6'
-var_vm_name        = 'ora18c-ords191-reverseproxy'
-#Reducing this to 4096 results in swapping 
-#In addition results in less efficient filesystem caching 
-#Resulting in worse nginx and apache caching
+var_vm_name        = 'ora18c-ords191'
+#Reducing var_mem_size further leads to swapping 
+#Also smaller filesystem cache leads to worse nginx and apache cache performance
 var_mem_size       = 6144
 var_cpus           = 4
 var_non_rotational = 'on' # SSD
@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
   #sets hostname which database creation to fail
   config.vm.provision "shell", path: "scripts/general.sh"
   #Generate certificates etc for use by Tomcat & Reverse Proxies
-  config.vm.provision "shell", path: "scripts/tls.sh"
+  config.vm.provision "shell", path: "scripts/certs.sh"
   #Apache Tomcat
   config.vm.provision "shell", path: "scripts/tomcat.sh"
   #Install ORDS 19.2 (can be downgraded to 19.1)

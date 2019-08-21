@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+DURATION=${1:-1M}
+echo ords-threads DURATION=$DURATION
+echo Show effect on throughput of maxThreads attribute
+
+for THREADS in 1 2 4 8 16 32 64 128
+do
+   ords-urls.py -o $[8000+THREADS]   
+   ords-tps $DURATION "$(printf "%3d thread(s):" $THREADS)"
+done

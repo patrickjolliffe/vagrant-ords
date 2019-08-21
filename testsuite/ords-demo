@@ -5,14 +5,12 @@
 
 DURATION=$1
 ITERATIONS=$2
-RESTART_WAIT_SECONDS=$3
 
-#Just in case orp-threads killed before completion
-set_threads 8 $RESTART_WAIT_SECONDS
+#Just in case there is previous incarnation still alive
+killall -9 siege 2> /dev/null
 
-ords-connections $DURATION
-ords-warmup $ITERATIONS $DURATION $RESTART_WAIT_SECONDS
+ords-warmup $ITERATIONS $DURATION
+ords-threads $DURATION
 ords-protocols $DURATION
-ords-threads $ITERATIONS $DURATION $RESTART_WAIT_SECONDS 
 ords-auto-manual $DURATION
 ords-rev-proxy $DURATION

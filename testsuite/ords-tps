@@ -1,0 +1,5 @@
+#Default to One Minute
+DURATION=${1:-1M}
+DESCRIPTION=$2
+echo -n "[$(date)] $DESCRIPTION "
+siege -c 255 -t $DURATION 2>&1 | awk '/rate/ {printf "%7s trans/sec\n", $3}'

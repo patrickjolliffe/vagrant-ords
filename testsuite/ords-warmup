@@ -3,18 +3,18 @@
 
 ITERATIONS=${1:-30}
 DURATION=${2:-10S}
-RESTART_WAIT_SECONDS=${3:-15}
 
-kill_siege
 
-echo ords-warmup ITERATIONS=$ITERATIONS DURATION=$DURATION RESTART_WAIT_SECONDS=$RESTART_WAIT_SECONDS
-echo Demonstrate transaction rate increasing as Tomcat warms up
-echo Also some ongoing variation in transaction rate 
-restart_tomcat $RESTART_WAIT_SECONDS
+echo ords-warmup ITERATIONS=$ITERATIONS DURATION=$DURATION
+echo Show throughput increases after Tomcat restart and ongoing variation 
 
-build_urls cache_off GET http proxy_none rest_manual
-for (( i=1; i<=$ITERATIONS; i++ ))  
+#Build Siege urls.txt file
+ords-urls.py
+echo Restarting Tomcat
+sudo systemctl restart tomcat.service
+sleep 10
+
+for (( i=0; i<$ITERATIONS; i++ ))  
 do
-    echo -n "$(date) "
-    siege -c 255 -t $DURATION 2>&1 | grep rate
+    ords-tps $DURATION
 done

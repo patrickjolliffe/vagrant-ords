@@ -4,6 +4,29 @@ yum install -y tomcat tomcat-native
 
 cat > /tmp/sed_herefile << EOF
    <!-- HTTP -->
+   <Connector port="8001"    protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="1" connectionTimeout="20000" />
+
+   <Connector port="8002"    protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="2" connectionTimeout="20000" />
+
+   <Connector port="8004"    protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="4" connectionTimeout="20000" />
+
+   <Connector port="8008"    protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="8" connectionTimeout="20000" />
+
+   <Connector port="8016"     protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="16" connectionTimeout="20000" />
+
+   <Connector port="8032"     protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="32" connectionTimeout="20000" />
+
+   <Connector port="8064"     protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="64" connectionTimeout="20000" />
+
+   <Connector port="8128"      protocol="org.apache.coyote.http11.Http11AprProtocol"
+              maxThreads="128" connectionTimeout="20000" />              
 
    <!-- APR/native connector -->   
    <Connector port="1110"    protocol="org.apache.coyote.http11.Http11AprProtocol"
@@ -17,12 +40,12 @@ cat > /tmp/sed_herefile << EOF
 
   <!-- Blocking Java connector -->
   <Connector port="1112" protocol="org.apache.coyote.http11.Http11Protocol"
-              maxThreads="4"
+              maxThreads="8"
               connectionTimeout="20000" />
 
   <!-- Not Implemented in Tomcat 7 :(
   <Connector port="1112" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
-              maxThreads="4"
+              maxThreads="8"
               connectionTimeout="20000" />              
    -->              
 
@@ -31,14 +54,14 @@ cat > /tmp/sed_herefile << EOF
    <Connector  port="1210" protocol="org.apache.coyote.http11.Http11AprProtocol"
                SSLCertificateFile="/usr/local/ssl/ords.crt"
                SSLCertificateKeyFile="/usr/local/ssl/ords.key"
-               maxThreads="4" SSLEnabled="true" scheme="https" secure="true"
+               maxThreads="8" SSLEnabled="true" scheme="https" secure="true"
                clientAuth="false" sslProtocol="TLS" />
 
    <!-- Non-blocking Java connector uses JSSE SSL  -->
    <Connector port="1211" protocol="org.apache.coyote.http11.Http11NioProtocol"              
               keystoreFile="/usr/local/ssl/ords.jks"
               keystorePass="Password123"
-              maxThreads="4" SSLEnabled="true" scheme="https" secure="true"
+              maxThreads="8" SSLEnabled="true" scheme="https" secure="true"
               clientAuth="false" sslProtocol="TLS" />
 
 
@@ -46,7 +69,7 @@ cat > /tmp/sed_herefile << EOF
    <Connector port="1212" protocol="org.apache.coyote.http11.Http11Protocol"              
               keystoreFile="/usr/local/ssl/ords.jks"
               keystorePass="Password123"
-              maxThreads="4" SSLEnabled="true" scheme="https" secure="true"
+              maxThreads="8" SSLEnabled="true" scheme="https" secure="true"
               clientAuth="false" sslProtocol="TLS" />
 EOF
 

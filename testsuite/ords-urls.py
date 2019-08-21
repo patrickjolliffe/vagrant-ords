@@ -3,40 +3,39 @@ import subprocess
 import sys
 import os
 import argparse
-from subprocess import DEVNULL, STDOUT, check_call
-
 
 protocol_http = 'http'
 protocol_https = 'https'
 
-proxy_nginx = 'n'
-proxy_varnish = 'v'
-proxy_httpd = 'h'
-proxy_none = 'o'
+reverse_proxy_nginx = 'nginx'
+reverse_proxy_varnish = 'varnish'
+reverse_proxy_httpd = 'httpd'
+reverse_proxy_none = 'none'
 
-method_get = 'g'
-method_post = 'p'
-all_methods = [method_get,method_post]
+method_get = 'get'
+method_post = 'post'
 
-def setup(protocol, proxy, method, cache, port):
-    print("Protocol:%s Proxy: %s Method: %s" % (protocol, proxy, method))
-    if (cache):
-        print('Caching')
-    else:
-        print('Not Caching')
+cache_off = 'off'
+cache_on = 'on'
 
-    if ((proxy == proxy_none) and cache):
+rest_type_auto = 'auto'
+rest_type_manual = 'manual'
+
+def setup(protocol, reverse_proxy, method, cache, rest_type, port):
+#    print("protocol=%s, reverse_proxy=%s, method=%s, cache=%s, rest_type=%s, Port=%s" % (protocol, reverse_proxy, method, cache, rest_type, port))
+
+    if ((reverse_proxy == reverse_proxy_none) and (cache == cache_on)):
         print("Invalid testing combo")
         return
 
     if port is None:
-      if proxy == proxy_none:
+        if reverse_proxy == reverse_proxy_none:
             port = 1000
-        elif proxy == proxy_httpd:
+        elif reverse_proxy == reverse_proxy_httpd:
             port = 2000
-        elif proxy == proxy_nginx:
+        elif reverse_proxy == reverse_proxy_nginx:
             port = 3000
-        elif proxy == proxy_varnish:
+        elif reverse_proxy == reverse_proxy_varnish:
             port = 4000
 
         if protocol == protocol_http:
@@ -44,61 +43,50 @@ def setup(protocol, proxy, method, cache, port):
         elif protocol == protocol_https:
             port += 200
 
-        port += 10
-        if cache:
+        if cache == cache_off:
             port += 10
-       if cache:
-            port += 10
-            if method == method_post:
-                port += 10
+        elif method == method_get: 
+            port += 20
+        elif method == method_post:             
+            port += 30
 
     with open('/etc/siege/urls.txt','r+') as f:
         f.seek(0)
         for emp in range(100, 200):
-            base_url = '%s://ords-reverseproxy.localdomain:%d/ords/hr/demo/get_employee' % (protocol,port)
-            #base_url = '%s://oel7-ords.localdomain:%d/ords/oradb18/hr/employees' % (protocol,port)
+            if rest_type == rest_type_auto:
+                base_url = '%s://ords:%d/ords/hr/auto_rest_employee' % (protocol,port)
+            else:
+                base_url = '%s://ords:%d/ords/hr/manual_rest/employee' % (protocol,port)
+
             if method == method_post:
                 full_url = '%s POST employee_id=%d' % (base_url,emp)
             else:
                 full_url = '%s/%d' % (base_url,emp)
-            if (emp == 100):
-                print(full_url)
+#            if (emp == 100):
+#                print(full_url)
             print(full_url, file=f)
         f.truncate()              
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-r', '--reverse_proxy', choices=[proxy_none,proxy_httpd,proxy_nginx,proxy_varnish])
-cache_parser = parser.add_mutually_exclusive_group(required=False)
-cache_parser.add_argument('--cache', action='store_true')
-cache_parser.add_argument('--no-cache', action='store_false')
-method_parser = parser.add_mutually_exclusive_group(required=False)
-method_parser.add_argument('--get',  action='store_true')
-method_parser.add_argument('--post', action='store_true')
-protocol_parser = parser.add_mutually_exclusive_group(required=False)
-protocol_parser.add_argument('--http',  action='store_true')
-protocol_parser.add_argument('--https', action='store_true')        
-parser.add_argument('--port', type=int)
+parser.add_argument('-r', '--reverse_proxy', choices=[reverse_proxy_none,reverse_proxy_httpd,reverse_proxy_nginx,reverse_proxy_varnish], default=reverse_proxy_none)
+#cache_parser = parser.add_mutually_exclusive_group(required=False)
+parser.add_argument('-c', '--cache', choices=[cache_off,cache_on], default=cache_off)
+#cache_parser.add_argument('-c', '--cache', action='store_true', help='cache requests')
+#cache_parser.add_argument('-n', '--no-cache', action='store_false', help="don't cache requests")
+parser.add_argument('-m', '--method', choices=[method_get, method_post], default=method_get)
+#method_parser = parser.add_mutually_exclusive_group(required=False)
+#method_parser.add_argument('-g', '--get',  action='store_true', help='use HTTP GET requests')
+#method_parser.add_argument('-p', '--post', action='store_true', help='use HTTP POST requests')
+parser.add_argument('-p', '--protocol', choices=[protocol_http, protocol_https], default=protocol_http)
+#protocol_parser = parser.add_mutually_exclusive_group(required=False)
+#protocol_parser.add_argument('-t', '--http',  action='store_true', help='use HTTP')
+#protocol_parser.add_argument('-s', '--https', action='store_true', help='use HTTPS')        
+parser.add_argument('-t', '--rest_type', choices=[rest_type_manual, rest_type_auto], default=rest_type_manual)
+parser.add_argument('-o', '--port', type=int)
 
 args = parser.parse_args()
-print(args)
 
-if args.cache is None:
-    caches = [False, True]
-else:
-    caches = [args.cache]
+#print(args)
 
+setup(args.protocol, args.reverse_proxy, args.method, args.cache, args.rest_type, args.port)
 
-if args.reverse_proxy is None:
-    proxies = all_proxies
-else:
-    proxies = [args.reverse_proxy]
-
-if args.http:
-    protocols = [protocol_http]
-elif args.https:
-    protocols = [protocol_https]
-
-if args.post:
-    methods= [method_post]
-elif args.get:
-    methods= [method_get]

@@ -19,6 +19,6 @@ sed -i '/PATH=/ s/$/:$HOME\/testsuite/' /home/vagrant/.bash_profile
 
 cat >> .bash_profile << EOF
 printf '\e[?1000l'         #Try to fix mouse getting screwy in iterm2
-echo "Welcome to the ORDS Reverse Proxy Vagrant Machine"
+echo "Welcome to the ORDS Vagrant Machine"
 echo "ords-demo will run the test suite"
 EOF

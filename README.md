@@ -19,6 +19,7 @@ $ tree
 ├── README.md
 ├── Vagrantfile
 ├── scripts
+│   ├── certs.sh
 │   ├── database.sh
 │   ├── general.sh
 │   ├── hitch.sh
@@ -26,7 +27,6 @@ $ tree
 │   ├── nginx.sh
 │   ├── ords.sh
 │   ├── siege.sh
-│   ├── tls.sh
 │   ├── tomcat.sh
 │   └── varnish.sh
 ├── software
@@ -42,7 +42,7 @@ $ tree
     ├── ords-max-threads
     ├── ords-protocols
     ├── ords-reset
-    ├── ords-reverse-proxies
+    ├── ords-rev-proxy
     ├── ords-upgrade
     ├── ords-urls.py
     ├── ords-versions

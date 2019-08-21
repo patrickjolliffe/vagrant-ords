@@ -53,7 +53,7 @@ java -jar ords.war uninstall simple
 java -jar ords.war
 cp ords.war /usr/share/tomcat/webapps
 #Increase connection pool size
-sed -i '/<\/properties>/ i <entry key="jdbc.InitialLimit">8</entry>\n<entry key="jdbc.MinLimit">8</entry>\n<entry key="jdbc.MaxLimit">8</entry>' /opt/oracle/ords/config/ords/conf/apex_pu.xml
+sed -i '/<\/properties>/ i <entry key="jdbc.InitialLimit">128</entry>\n<entry key="jdbc.MinLimit">128</entry>\n<entry key="jdbc.MaxLimit">128</entry>' /opt/oracle/ords/config/ords/conf/apex_pu.xml
 rm -f /opt/oracle/ords/config/ords/conf/apex_al.xml
 rm -f /opt/oracle/ords/config/ords/conf/apex_rt.xml
 rm -f /opt/oracle/ords/config/ords/conf/apex.xml
@@ -68,22 +68,17 @@ EOF"
 
 su -l oracle -c "sqlplus system/Password123@localhost:1521/XEPDB1 <<EOF
         BEGIN
-            ORDS.ENABLE_SCHEMA(
-                p_enabled             => TRUE,
-                p_schema              => 'HR',
-                p_url_mapping_type    => 'BASE_PATH',
-                p_url_mapping_pattern => 'hr',
+            ORDS.ENABLE_SCHEMA(                
+                p_schema              => 'HR',                                
                 p_auto_rest_auth      => FALSE);
-        END;
-        /
-        BEGIN
-            ORDS.ENABLE_OBJECT(
-                p_enabled => TRUE,
+        
+            ORDS.ENABLE_OBJECT(                
                 p_schema => 'HR',
-                p_object => 'EMPLOYEES',
-                p_object_type => 'TABLE',
-                p_object_alias => 'employees',
+                p_object => 'EMPLOYEES',                
+                p_object_alias => 'auto_rest_employee',
                 p_auto_rest_auth => FALSE);
+                
+            COMMIT;
         END;
         /
         exit;
@@ -106,24 +101,24 @@ BEGIN
 END;
 /
 BEGIN
-   ords.define_module(   p_module_name      => 'demo',
-                         p_base_path        => '/demo/');                  
+   ords.define_module(   p_module_name      => 'manual_rest',
+                         p_base_path        => '/manual_rest/');                  
 END;
 /
 
 BEGIN       
-   ords.define_template( p_module_name       => 'demo',
-                         p_pattern           => 'get_employee/:employee_id');
+   ords.define_template( p_module_name       => 'manual_rest',
+                         p_pattern           => 'employee/:employee_id');
 
-   ords.define_handler(  p_module_name       => 'demo',
-                         p_pattern           => 'get_employee/:employee_id',
+   ords.define_handler(  p_module_name       => 'manual_rest',
+                         p_pattern           => 'employee/:employee_id',
                          p_method            => 'GET',
                          p_source_type       => ORDS.source_type_plsql,
                          p_source            => 
                             'BEGIN :record := get_employee(:employee_id); END;');
 
-   ords.define_parameter( p_module_name        => 'demo',
-                          p_pattern            => 'get_employee/:employee_id',
+   ords.define_parameter( p_module_name        => 'manual_rest',
+                          p_pattern            => 'employee/:employee_id',
                           p_method             => 'GET',
                           p_name               => 'record',
                           p_bind_variable_name => 'record',
@@ -135,18 +130,18 @@ END;
 /
 
 BEGIN
-   ords.define_template( p_module_name       => 'demo',
-                         p_pattern           => 'get_employee');
+   ords.define_template( p_module_name       => 'manual_rest',
+                         p_pattern           => 'employee');
 
-   ords.define_handler(  p_module_name       => 'demo',
-                         p_pattern           => 'get_employee',
+   ords.define_handler(  p_module_name       => 'manual_rest',
+                         p_pattern           => 'employee',
                          p_method            => 'POST',
                          p_source_type       => ORDS.source_type_plsql,
                          p_source            =>
                             'BEGIN :record := get_employee(:employee_id); END;');
 
-   ords.define_parameter( p_module_name        => 'demo',
-                          p_pattern            => 'get_employee',
+   ords.define_parameter( p_module_name        => 'manual_rest',
+                          p_pattern            => 'employee',
                           p_method             => 'POST',
                           p_name               => 'record',
                           p_bind_variable_name => 'record',
