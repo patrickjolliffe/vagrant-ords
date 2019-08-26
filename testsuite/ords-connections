@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+DURATION=${1:-1M}
+echo ords-connections DURATION=$DURATION
+echo Demonstrate differences between 1 and 255 connections
+
+ords-urls.py
+siege -c 1 -t $DURATION>/dev/null
+siege -c 255 -t $DURATION>/dev/null

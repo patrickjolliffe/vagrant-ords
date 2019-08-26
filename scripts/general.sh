@@ -12,9 +12,9 @@ EOF
 wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y epel-release-latest-7.noarch.rpm
 rm epel-release-latest-7.noarch.rpm
-yum install -y htop jq mlocate strace
+yum install -y htop jq mlocate python3 strace
 
-sed -i 's/PATH=/ i ' /home/vagrant/.bash_profile
+#sed -i 's/PATH=/ i ' /home/vagrant/.bash_profile
 sed -i '/PATH=/ s/$/:$HOME\/testsuite/' /home/vagrant/.bash_profile
 
 cat >> .bash_profile << EOF

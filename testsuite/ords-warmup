@@ -1,11 +1,8 @@
 #!/usr/bin/bash
-. ords-lib
+DURATION=${1:-10S}
+ITERATIONS=${2:-30}
 
-ITERATIONS=${1:-30}
-DURATION=${2:-10S}
-
-
-echo ords-warmup ITERATIONS=$ITERATIONS DURATION=$DURATION
+echo ords-warmup DURATION=$DURATION ITERATIONS=$ITERATIONS
 echo Show throughput increases after Tomcat restart and ongoing variation 
 
 #Build Siege urls.txt file

@@ -1,15 +1,14 @@
 #!/usr/bin/bash
 #No problem if it's blank
 #Each test should provide it's own defaults
-. ords-lib
-
 DURATION=$1
 ITERATIONS=$2
 
 #Just in case there is previous incarnation still alive
 killall -9 siege 2> /dev/null
 
-ords-warmup $ITERATIONS $DURATION
+ords-connections $DURATION
+ords-warmup $DURATION $ITERATIONS
 ords-threads $DURATION
 ords-protocols $DURATION
 ords-auto-manual $DURATION

@@ -1,5 +1,0 @@
-#!/usr/bin/bash
-. ords-lib
-set_threads 8
-
-
