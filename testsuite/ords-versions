@@ -1,9 +1,7 @@
 #!/usr/bin/bash
-ITERATIONS=${1:-5}
+ITERATIONS=${1:-3}
 DURATION=${2:-1M}
 echo ords-versions ITERATIONS=$ITERATIONS DURATION=$DURATION
-
-. ords-lib
 
 for VERSION in 19.1 19.2
 do 
@@ -14,18 +12,16 @@ do
    sudo sh /vagrant/scripts/ords.sh $VERSION >/dev/null 2>&1 
    echo Installation Completed
    sudo systemctl start tomcat.service
-   build_urls cache_off GET http proxy_none rest_auto
+   ords-urls.py -t auto
    echo "ORDS Version "$VERSION" Auto REST:"
    for (( i=1; i<=$ITERATIONS; i++ ))  
    do
-      echo -n "$(date): "
-      siege_tps $DURATION
+      ords-tps $DURATION "Auto"
    done
-   build_urls cache_off GET http proxy_none rest_manual
+   ords-urls.py -t manual
    echo "ORDS Version "$VERSION" Manual REST:"
    for (( i=1; i<=$ITERATIONS; i++ ))  
    do
-      echo -n "$(date): "
-      siege_tps $DURATION
+      ords-tps $DURATION "Manual"
    done
 done
