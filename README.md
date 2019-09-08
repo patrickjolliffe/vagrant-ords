@@ -14,8 +14,6 @@ Place the Oracle Express Edition (XE) RPM and ORDS software in the "software" di
 Directory contents when software is included.
 
 ```
-$ tree
-.
 ├── README.md
 ├── Vagrantfile
 ├── scripts
@@ -38,12 +36,10 @@ $ tree
     ├── ords-auto-manual
     ├── ords-connections
     ├── ords-demo
-    ├── ords-lib
-    ├── ords-max-threads
     ├── ords-protocols
-    ├── ords-reset
     ├── ords-rev-proxy
-    ├── ords-upgrade
+    ├── ords-threads
+    ├── ords-tps
     ├── ords-urls.py
     ├── ords-versions
     └── ords-warmup
